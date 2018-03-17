@@ -39,21 +39,26 @@ void light_pixel( int pixel_index, int colour )
 
 void loop()
 {
-  constexpr float beat_duration_us = ( 1.0f / ( 120.0f / 60.0f ) ) * 1000.0f * 1000.0f;
-  constexpr int light_duration_us = beat_duration_us / LEDS_IN_STRIP;
+  //constexpr float beat_duration_us = ( 1.0f / ( 120.0f / 60.0f ) ) * 1000.0f * 1000.0f;
+  //constexpr int light_duration_us = beat_duration_us / LEDS_IN_STRIP;
   
   static int pixel = 0;
   static int inc = 1;
 
   g_tap_bpm.update( millis() );
 
-  pixel += inc;
-  if( pixel == 0 || pixel == LEDS_IN_STRIP - 1 )
+  if( g_tap_bpm.valid_bpm() )
   {
-    inc *= -1; // invert direction
+    const int beat_duration_us = g_tap_bpm.beat_duration_ms() * 1000;
+    const int light_duration_us = beat_duration_us / LEDS_IN_STRIP;;
+    pixel += inc;
+    if( pixel == 0 || pixel == LEDS_IN_STRIP - 1 )
+    {
+      inc *= -1; // invert direction
+    }
+    
+    light_pixel( pixel, 0xFFFFFF );
+    g_led_strip.show();
+    delayMicroseconds( light_duration_us );
   }
-  
-  light_pixel( pixel, 0xFFFFFF );
-  g_led_strip.show();
-  delayMicroseconds( light_duration_us );
-}
+  }
