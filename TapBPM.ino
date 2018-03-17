@@ -35,13 +35,8 @@ float TAP_BPM::bpm() const
 
 float TAP_BPM::beat_duration_ms() const
 {
- #ifdef SET_TEMPO
-  static float beat_duration = ( 1.0f / ( 92.0f / 60.0f )  ) * 1000.0f; // 92 bpm
-  return beat_duration;
- #else
   ASSERT_MSG( valid_bpm(), "beat_duration_ms() invalid_bpm!" );
   return m_average_times.average();
-#endif
 }
 
 void TAP_BPM::setup()
@@ -66,11 +61,7 @@ void TAP_BPM::update( float time_ms )
     {
       float duration = time_ms - m_prev_tap_time_ms;
 
-      if( duration > MAX_DURATION )
-      {
-        m_average_times.reset();
-      }
-      else
+      if( duration < MAX_DURATION )
       {
         m_average_times.add( duration );
       }

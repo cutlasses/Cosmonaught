@@ -3,6 +3,9 @@
 
 const int LEDS_IN_STRIP = 18;
 
+const int NUM_COLOURS = 5;
+const int g_colours[NUM_COLOURS] = { 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFFFFFF };
+
 DMAMEM int g_display_memory[ LEDS_IN_STRIP * 6 ];
 int g_drawing_memory[ LEDS_IN_STRIP * 6 ];
 
@@ -43,6 +46,7 @@ void loop()
   //constexpr int light_duration_us = beat_duration_us / LEDS_IN_STRIP;
   
   static int pixel = 0;
+  static int colour = 0;
   static int inc = 1;
 
   g_tap_bpm.update( millis() );
@@ -55,9 +59,11 @@ void loop()
     if( pixel == 0 || pixel == LEDS_IN_STRIP - 1 )
     {
       inc *= -1; // invert direction
+
+      colour = (colour + 1) % NUM_COLOURS;
     }
     
-    light_pixel( pixel, 0xFFFFFF );
+    light_pixel( pixel, g_colours[colour] );
     g_led_strip.show();
     delayMicroseconds( light_duration_us );
   }
