@@ -18,6 +18,8 @@ void setup()
   
   g_led_strip.begin();
   g_led_strip.show();
+
+  g_tap_bpm.setup();
 }
 
 void light_pixel( int pixel_index, int colour )
@@ -37,11 +39,13 @@ void light_pixel( int pixel_index, int colour )
 
 void loop()
 {
-  constexpr int beat_duration = ( 120 / 60 ) * 1000 * 1000;
-  constexpr int light_duration = beat_duration / LEDS_IN_STRIP;
+  constexpr float beat_duration_us = ( 1.0f / ( 120.0f / 60.0f ) ) * 1000.0f * 1000.0f;
+  constexpr int light_duration_us = beat_duration_us / LEDS_IN_STRIP;
   
   static int pixel = 0;
   static int inc = 1;
+
+  g_tap_bpm.update( millis() );
 
   pixel += inc;
   if( pixel == 0 || pixel == LEDS_IN_STRIP - 1 )
@@ -51,5 +55,5 @@ void loop()
   
   light_pixel( pixel, 0xFFFFFF );
   g_led_strip.show();
-  delayMicroseconds( light_duration );
+  delayMicroseconds( light_duration_us );
 }
