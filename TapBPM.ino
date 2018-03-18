@@ -51,7 +51,12 @@ void TAP_BPM::update( float time_ms )
   m_tap_button.update( time_ms );
 
   // button pressed
-  if( m_tap_button.single_click() )
+  if( m_tap_button.down_time_ms() > 2000 )
+  {
+    // reset on long hold (2s)
+    m_average_times.reset();
+  }
+  else if( m_tap_button.single_click() )
   {
 #ifdef DEBUG_OUTPUT
     Serial.print("Button down\n");

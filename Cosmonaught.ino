@@ -40,21 +40,28 @@ void light_pixel( int pixel_index, int colour )
   }
 }
 
-void loop()
+void clear_pixels()
 {
-  //constexpr float beat_duration_us = ( 1.0f / ( 120.0f / 60.0f ) ) * 1000.0f * 1000.0f;
-  //constexpr int light_duration_us = beat_duration_us / LEDS_IN_STRIP;
-  
+  for( int i = 0; i < LEDS_IN_STRIP; ++i )
+  {
+    g_led_strip.setPixel( i, 0 );
+  }
+}
+
+void loop()
+{  
   static int pixel = 0;
   static int colour = 0;
   static int inc = 1;
+  static bool reset = true;
 
   g_tap_bpm.update( millis() );
 
   if( g_tap_bpm.valid_bpm() )
   {
     const int beat_duration_us = g_tap_bpm.beat_duration_ms() * 1000;
-    const int light_duration_us = beat_duration_us / LEDS_IN_STRIP;;
+    const int light_duration_us = beat_duration_us / LEDS_IN_STRIP;
+    reset = false;
     pixel += inc;
     if( pixel == 0 || pixel == LEDS_IN_STRIP - 1 )
     {
@@ -64,7 +71,17 @@ void loop()
     }
     
     light_pixel( pixel, g_colours[colour] );
+
     g_led_strip.show();
     delayMicroseconds( light_duration_us );
   }
+  else if( !reset )
+  {
+    // don't bother to clear pixels until the first beat (might conserve power this way)
+    reset = true;
+    
+    clear_pixels();
+
+    g_led_strip.show();
   }
+}
