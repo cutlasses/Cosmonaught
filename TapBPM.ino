@@ -14,7 +14,7 @@ TAP_BPM::TAP_BPM( int button_pin ) :
 
 bool TAP_BPM::valid_bpm() const
 {
- #ifdef SET_TEMPO
+ #ifdef FIXED_TEMPO
   return true;
  #else
   return m_average_times.size() >= 2; // 3 taps
@@ -35,6 +35,10 @@ float TAP_BPM::bpm() const
 
 float TAP_BPM::beat_duration_ms() const
 {
+#ifdef FIXED_TEMPO
+  return 500;
+#endif
+
   ASSERT_MSG( valid_bpm(), "beat_duration_ms() invalid_bpm!" );
   return m_average_times.average();
 }

@@ -18,11 +18,17 @@ TAP_BPM g_tap_bpm( 23 ); // pin 23
 void setup()
 {
   Serial.begin(9600);
+
+#ifdef DEBUG_OUTPUT
+  serial_port_initialised = true;
+#endif // DEBUG_OUTPUT
   
   g_led_strip.begin();
   g_led_strip.show();
 
   g_tap_bpm.setup();
+
+  DEBUG_TEXT("SETUP\n");
 }
 
 void light_pixel( int pixel_index, int colour )
